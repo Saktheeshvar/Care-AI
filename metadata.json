@@ -1,0 +1,6 @@
+{
+  "name": "CareAI — Smart Elderly Healthcare Assistant",
+  "description": "Helping seniors stay on schedule. Helping families stay informed. Smart medication reminder escalation and caregiver alerts.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

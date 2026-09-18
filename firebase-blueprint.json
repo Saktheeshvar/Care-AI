@@ -1,0 +1,133 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Base authenticated user profile representing caregivers or elderly members.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["CAREGIVER", "ELDERLY"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "ElderlyUser": {
+      "title": "ElderlyUser",
+      "description": "Senior profile linked to their primary caregiver and emergency contact.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "caregiverId": { "type": "string" },
+        "emergencyContactName": { "type": "string" },
+        "emergencyContactPhone": { "type": "string" },
+        "preferredLanguage": { "type": "string", "enum": ["en", "ta"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "caregiverId", "emergencyContactName", "emergencyContactPhone"]
+    },
+    "Caregiver": {
+      "title": "Caregiver",
+      "description": "Authorized caregiver profile supervising assigned elderly users.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId"]
+    },
+    "Medicine": {
+      "title": "Medicine",
+      "description": "Medication record configured by caregiver without dosage directives.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "elderlyUserId": { "type": "string" },
+        "name": { "type": "string" },
+        "time": { "type": "string", "description": "24h formatted time HH:mm e.g. 08:00" },
+        "frequency": { "type": "string", "enum": ["Daily", "Twice Daily", "Weekly", "As Needed"] },
+        "startDate": { "type": "string", "format": "date" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "elderlyUserId", "name", "time", "frequency", "active"]
+    },
+    "Reminder": {
+      "title": "Reminder",
+      "description": "Scheduled reminder instance with state machine status.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "medicineId": { "type": "string" },
+        "scheduledTime": { "type": "string" },
+        "status": { 
+          "type": "string", 
+          "enum": ["UPCOMING", "DUE", "PENDING", "TAKEN", "NOT_CONFIRMED", "FOLLOW_UP", "ESCALATED"] 
+        },
+        "followUpTime": { "type": "string" },
+        "escalationTime": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "medicineId", "scheduledTime", "status"]
+    },
+    "ReminderHistory": {
+      "title": "ReminderHistory",
+      "description": "Audit log recording response states (TAKEN, NOT YET, ESCALATED) with timestamps.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reminderId": { "type": "string" },
+        "status": { "type": "string" },
+        "responseTime": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "reminderId", "status", "responseTime"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Escalation and reminder status notifications sent to caregivers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "caregiverId": { "type": "string" },
+        "type": { "type": "string", "enum": ["REMINDER_PENDING", "FOLLOW_UP", "ESCALATION_ALERT", "TAKEN_CONFIRMED"] },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "caregiverId", "type", "title", "message", "read"]
+    },
+    "AIMessage": {
+      "title": "AIMessage",
+      "description": "User conversation logs with verified CareAI assistant.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "role", "message"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User" },
+    "/elderlyUsers/{elderlyId}": { "schema": "ElderlyUser" },
+    "/caregivers/{caregiverId}": { "schema": "Caregiver" },
+    "/medicines/{medicineId}": { "schema": "Medicine" },
+    "/reminders/{reminderId}": { "schema": "Reminder" },
+    "/reminderHistory/{historyId}": { "schema": "ReminderHistory" },
+    "/notifications/{notificationId}": { "schema": "Notification" },
+    "/aiMessages/{messageId}": { "schema": "AIMessage" }
+  }
+}
